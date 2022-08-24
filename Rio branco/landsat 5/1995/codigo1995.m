@@ -1,18 +1,18 @@
 % LANDSAT 5 
 clc;clear;
-fname = 'LT05_L1TP_216066_20081101_20200828_02_T1_MTL.json';
+fname = 'LT05_L1TP_002067_19950511_20200913_02_T1_MTL.json';
 fid = fopen(fname);
 raw = fread(fid,inf);
 str = char(raw');
 fclose(fid);
 val = jsondecode(str);
 
-%% 2008
-meuretangle = [2840,3008,5570-2840,6361-3008-100];
+%% 1995
+meuretangle = [2352,915,6502-2352,6203-915];
 %BIV = double(imread('LT05_L2SP_214066_19890928_20200916_02_T1_SR_B4.TIF'));
-B4 = double(imcrop(imread('LT05_L1TP_216066_20081101_20200828_02_T1_B4.TIF'),meuretangle));
-B3 = double(imcrop(imread('LT05_L1TP_216066_20081101_20200828_02_T1_B3.TIF'),meuretangle));
-B6 = double(imcrop(imread('LT05_L1TP_216066_20081101_20200828_02_T1_B6.TIF'),meuretangle));
+B4 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B4.TIF'),meuretangle));
+B3 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B3.TIF'),meuretangle));
+B6 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B6.TIF'),meuretangle));
 
 
 %CALIBRAÇÃO RADIOMÉTRICA E REFLECTÂNCIA ESPECTRAL
@@ -69,4 +69,3 @@ T_s = (K2./log(((EmissividadeNB*K1)./L_toaB6)+1))-273.15;
 figure;imshow(T_s,[])
 colormap(jet)
 colorbar
-

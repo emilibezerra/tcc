@@ -1,21 +1,26 @@
-% LANDSAT 8 - 2016 SAO LOURENÇO
+% LANDSAT 8 
 clc;clear;
-fname = 'LC08_L1TP_216066_20161006_20200906_02_T1_MTL.json';
+fname = 'LC08_L1TP_002067_20210923_20211003_02_T1_MTL.json';
 fid = fopen(fname);
 raw = fread(fid,inf);
 str = char(raw');
 fclose(fid);
 val = jsondecode(str);
 
-%% 2016
-meuretangle = [3019,3863,5417-3019,6763-3863];
-BIV = double(imcrop(imread('LC08_L1TP_216066_20161006_20200906_02_T1_B5.TIF'),meuretangle));
-BV = double(imcrop(imread('LC08_L1TP_216066_20161006_20200906_02_T1_B4.TIF'),meuretangle));
-B_INF = double(imcrop(imread('LC08_L1TP_216066_20161006_20200906_02_T1_B10.TIF'),meuretangle));
+%% 2021
+%meuretangle = [2036,1586,6194-2036,6678-1586];
+%BIV = double(imcrop(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF'),meuretangle));
+%BV = double(imcrop(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF'),meuretangle));
+%B_INF = double(imcrop(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF'),meuretangle));
 
-%BV = double(imread('LC08_L2SP_216066_20161006_20200906_02_T1_SR_B4.TIF'));
-%BIV = double(imread('LC08_L2SP_216066_20161006_20200906_02_T1_SR_B5.TIF'));
-%B_INF = double(imread('LC08_L2SP_216066_20161006_20200906_02_T1_ST_B10.TIF'));
+BV = double(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF'));
+BIV = double(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF'));
+B_INF = double(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF'));
+
+
+BV(find(BV==0))= mean(BV(:));
+BIV(find(BIV==0))= mean(BIV(:));
+B_INF(find(B_INF==0))= mean(B_INF(:));
 
 q_cal10 = B_INF./1;
 q_cal4 = BV./1;
@@ -55,6 +60,7 @@ NDVI = (R_B5 - R_B4)./(R_B5 + R_B4);
 figure;imshow(NDVI,[])
 colormap(jet)
 colorbar
+
 %saveas(gcf,'NDVI','png');
 %close all
 
