@@ -13,14 +13,14 @@ val = jsondecode(str);
 %BV = double(imcrop(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF'),meuretangle));
 %B_INF = double(imcrop(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF'),meuretangle));
 
-BV = double(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B4.TIF'));
-BIV = double(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B5.TIF'));
-B_INF = double(imread('LC08_L1TP_002067_20210923_20211003_02_T1_B10.TIF'));
+BV = double(imread('TESTE_B4.TIF'));
+BIV = double(imread('TESTE_B5.TIF'));
+B_INF = double(imread('TESTE_B10.TIF'));
 
 
-BV(find(BV==0))= mean(BV(:));
-BIV(find(BIV==0))= mean(BIV(:));
-B_INF(find(B_INF==0))= mean(B_INF(:));
+%BV(find(BV==0))= mean(BV(:));
+%BIV(find(BIV==0))= mean(BIV(:));
+%B_INF(find(B_INF==0))= mean(B_INF(:));
 
 q_cal10 = B_INF./1;
 q_cal4 = BV./1;
@@ -57,9 +57,11 @@ R_B5 = ((REFLECTANCE_MULT_BAND_5.*q_cal5)+REFLECTANCE_ADD_BAND_5)./(cos(Z).*(1/E
 
 %ÍNDICE DE VEGETAÇÃO DE DIFERENÇA NORMALIZADA (NDVI)
 NDVI = (R_B5 - R_B4)./(R_B5 + R_B4);
-figure;imshow(NDVI,[])
+NDVI(find(NDVI==0))= NaN;
+figure;imshow(NDVI,[0 1])
 colormap(jet)
 colorbar
+
 
 %saveas(gcf,'NDVI','png');
 %close all
@@ -80,8 +82,15 @@ EmissividadeNB = 0.97 - 0.0033*IAF;
 K1_CONSTANT_BAND_10= str2double(val.LANDSAT_METADATA_FILE.LEVEL1_THERMAL_CONSTANTS.K1_CONSTANT_BAND_10);
 K2_CONSTANT_BAND_10= str2double(val.LANDSAT_METADATA_FILE.LEVEL1_THERMAL_CONSTANTS.K2_CONSTANT_BAND_10);
 TempSuperf = (K2_CONSTANT_BAND_10./log((EmissividadeNB.*K1_CONSTANT_BAND_10./L_TOA10)+1))-273.15;
-figure;imshow(TempSuperf,[])
-colormap(jet)
+TempSuperf(find(TempSuperf < -20))= NaN;
+h = imagesc(TempSuperf);
+axis off;
+%figure;imshow(TempSuperf,[]);
+%h = colormap(jet)
+set(h, 'AlphaData', ~isnan(TempSuperf)); 
+set(gca,'color','white');
 colorbar
+% Set the colormap to hsv: 
+colormap
 %saveas(gcf,'TempSuperf','png');
 %close all
