@@ -10,9 +10,9 @@ val = jsondecode(str);
 %% 1995
 meuretangle = [2352,915,6502-2352,6203-915];
 %BIV = double(imread('LT05_L2SP_214066_19890928_20200916_02_T1_SR_B4.TIF'));
-B4 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B4.TIF'),meuretangle));
-B3 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B3.TIF'),meuretangle));
-B6 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B6.TIF'),meuretangle));
+B4 = double(imcrop(imread('RECORTE_B4.TIF'),meuretangle));
+B3 = double(imcrop(imread('recorte_B3.TIF'),meuretangle));
+B6 = double(imcrop(imread('RECORTE_B6.TIF'),meuretangle));
 
 
 %CALIBRAÇÃO RADIOMÉTRICA E REFLECTÂNCIA ESPECTRAL

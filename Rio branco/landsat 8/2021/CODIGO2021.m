@@ -85,8 +85,6 @@ TempSuperf = (K2_CONSTANT_BAND_10./log((EmissividadeNB.*K1_CONSTANT_BAND_10./L_T
 TempSuperf(find(TempSuperf < -20))= NaN;
 h = imagesc(TempSuperf);
 axis off;
-%figure;imshow(TempSuperf,[]);
-%h = colormap(jet)
 set(h, 'AlphaData', ~isnan(TempSuperf)); 
 set(gca,'color','white');
 colorbar
