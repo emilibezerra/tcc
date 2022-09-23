@@ -1,5 +1,5 @@
 % LANDSAT 8 
-clc;clear;
+clc;clear; close all;
 fname = 'LC08_L1TP_002067_20210923_20211003_02_T1_MTL.json';
 fid = fopen(fname);
 raw = fread(fid,inf);
@@ -17,10 +17,10 @@ BV = double(imread('TESTE_B4.TIF'));
 BIV = double(imread('TESTE_B5.TIF'));
 B_INF = double(imread('TESTE_B10.TIF'));
 
-
-%BV(find(BV==0))= mean(BV(:));
-%BIV(find(BIV==0))= mean(BIV(:));
-%B_INF(find(B_INF==0))= mean(B_INF(:));
+% 
+% BV(find(BV>12000))= mean(BV(:));
+% BIV(find(BIV>20000))= mean(BIV(:));
+% B_INF(find(B_INF<25000))= mean(B_INF(:));
 
 q_cal10 = B_INF./1;
 q_cal4 = BV./1;
@@ -58,9 +58,14 @@ R_B5 = ((REFLECTANCE_MULT_BAND_5.*q_cal5)+REFLECTANCE_ADD_BAND_5)./(cos(Z).*(1/E
 %ÍNDICE DE VEGETAÇÃO DE DIFERENÇA NORMALIZADA (NDVI)
 NDVI = (R_B5 - R_B4)./(R_B5 + R_B4);
 NDVI(find(NDVI==0))= NaN;
-figure;imshow(NDVI,[0 1])
-colormap(jet)
-colorbar
+h = imagesc(NDVI, [0 1]);
+ axis off;
+ set(h, 'AlphaData', ~isnan(NDVI)); 
+ set(gca,'color','white');
+ c=colorbar
+ c.FontSize=14;
+ %Set the colormap to hsv: 
+colormap
 
 
 %saveas(gcf,'NDVI','png');
@@ -83,14 +88,49 @@ K1_CONSTANT_BAND_10= str2double(val.LANDSAT_METADATA_FILE.LEVEL1_THERMAL_CONSTAN
 K2_CONSTANT_BAND_10= str2double(val.LANDSAT_METADATA_FILE.LEVEL1_THERMAL_CONSTANTS.K2_CONSTANT_BAND_10);
 TempSuperf = (K2_CONSTANT_BAND_10./log((EmissividadeNB.*K1_CONSTANT_BAND_10./L_TOA10)+1))-273.15;
 TempSuperf(find(TempSuperf < -20))= NaN;
+figure;
 h = imagesc(TempSuperf);
 axis off;
-%figure;imshow(TempSuperf,[]);
-%h = colormap(jet)
 set(h, 'AlphaData', ~isnan(TempSuperf)); 
 set(gca,'color','white');
-colorbar
-% Set the colormap to hsv: 
+c=colorbar
+c.FontSize=14;
 colormap
-%saveas(gcf,'TempSuperf','png');
-%close all
+
+
+%Perfil selicionado no mapa
+% x1 = 6052; y1 = 1763;
+% x2 = 5889; y2 = 1763;
+  
+x1 = 6500; y1 = 1872;
+x2 = 2000; y2 = 1872;
+
+a_temp = TempSuperf(y1:y2 , x2:x1 );
+a_temp = rot90(a_temp', -1);
+%d_a_temp = diag(a_temp);
+%d_a_temp = d_a_temp/max(d_a_temp);
+b_temp = insertShape(NDVI, 'Line', [x1 y1 x2 y2 ], 'Color', 'red', 'LineWidth',10);
+figure; imshow(b_temp, []); title('Região Amostrada');
+
+
+
+
+a_ndvi =NDVI(y1:y2 , x2:x1);
+a_ndvi = rot90(a_ndvi', -1);
+a_ndvi = a_ndvi;
+figure; title('Perfil 2021');
+yyaxis left
+ plot(a_temp, 'DisplayName', 'Temperatura C°');
+ ylabel('Temperatura em C°')
+
+hold on
+yyaxis right
+plot(a_ndvi, 'DisplayName', 'NDVI')
+ylabel('NDVI')
+xlabel('Pixels amostrados')
+lgd = legend('Location','bestoutside')
+lgd.Title.String = 'Legenda'
+
+%Correlação entre o ndvi e a Temperatura de superficie
+[rho, pval] = corr(a_temp', a_ndvi', 'Type', 'Spearman');
+[rho, pval] = corr(a_temp', a_ndvi', 'Type', 'Pearson');

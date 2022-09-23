@@ -1,5 +1,5 @@
 % LANDSAT 5 
-clc;clear;
+clc;clear;close all;
 fname = 'LT05_L1TP_002067_19950511_20200913_02_T1_MTL.json';
 fid = fopen(fname);
 raw = fread(fid,inf);
@@ -8,11 +8,39 @@ fclose(fid);
 val = jsondecode(str);
 
 %% 1995
-meuretangle = [2352,915,6502-2352,6203-915];
+%meuretangle = [2352,915,6502-2352,6203-915];
 %BIV = double(imread('LT05_L2SP_214066_19890928_20200916_02_T1_SR_B4.TIF'));
-B4 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B4.TIF'),meuretangle));
-B3 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B3.TIF'),meuretangle));
-B6 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B6.TIF'),meuretangle));
+%B4 = double(imcrop(imread('RECORTE_B4.TIF'),meuretangle));
+%B3 = double(imcrop(imread('recorte_B3.TIF'),meuretangle));
+%B6 = double(imcrop(imread('RECORTE_B6.TIF'),meuretangle));
+
+B4 = double(imread('RECORTE_B4.tif'));
+B3 = double(imread('recorte_B3.TIF'));
+B6 = double(imread('RECORTE_B6.TIF'));
+
+%========Removendo Nuvens=========
+
+%B4(find(B4<44))= mean(B4(:));
+%B3(find(B3>15))= mean(B3(:));
+%B6(find(B6<114))= mean(B6(:));
+
+
+%==========================================
+ %B4(find(B4>100)) = 0;
+ mask_b4 = B4;
+ mask_b3 = B3;
+ mask_b3(find(mask_b3>0)) = 1;
+ mask_b4(find(mask_b4>0)) = 1;
+ mask_b4 = imerode(mask_b4, strel('square', 20));
+ mask_b3 = imerode(mask_b3, strel('square', 20));
+ mask_b6 = B6;
+ mask_b6(find(mask_b6>0)) = 1;
+ mask_b6 = imopen(mask_b6, strel('disk', 15));
+ B3 = mask_b4 .* B3;
+ B4 = mask_b4 .* B4;
+%B3(find(B3==0)) = 255;
+% B6(find(B6==0)) = -20;
+%==========================================
 
 
 %CALIBRAÇÃO RADIOMÉTRICA E REFLECTÂNCIA ESPECTRAL
@@ -30,6 +58,9 @@ L_toaB3 = a_BAND3+((b_BAND3-a_BAND3)/255)*B3;
 L_toaB4 =  a_BAND4+((b_BAND4-a_BAND4)/255)*B4;
 L_toaB6 =  a_BAND6+((b_BAND6-a_BAND6)/255)*B6;
 
+L_toaB4(find(L_toaB4==a_BAND4)) = 0;
+L_toaB3(find(L_toaB3==a_BAND3)) = 0;
+
 %Reflectância monocromática de cada banda
 %Irradiação solar espectral, de cada banda, no topo da atmosfera (ki)
 %DATE_ACQUIRED = 2008 - 11 -01;
@@ -45,9 +76,15 @@ R_B3 = (pi.*L_toaB3)./(ki_B3*cos(Z)*d);
 R_B4 = (pi.*L_toaB4)./(ki_B4*cos(Z)*d);
 
 NDVI = (R_B4 - R_B3)./(R_B4 + R_B3);
-figure;imshow(NDVI,[])
-colormap(jet)
-colorbar
+%NDVI(find(NDVI==0.313725))= NaN;
+h = imagesc(NDVI);
+axis off;
+set(h, 'AlphaData', ~isnan(NDVI)); 
+set(gca,'color','white');
+c=colorbar
+c.FontSize=14; 
+colormap
+
 
 L  = 0.5;
 
@@ -65,7 +102,51 @@ EmissividadeNB = 0.97 - 0.0033*IAF;
 %TEMPERATURA DE SUPERFICIE
 K1 = str2double(val.LANDSAT_METADATA_FILE.LEVEL1_THERMAL_CONSTANTS.K1_CONSTANT_BAND_6); 
 K2 = str2double(val.LANDSAT_METADATA_FILE.LEVEL1_THERMAL_CONSTANTS.K2_CONSTANT_BAND_6);
-T_s = (K2./log(((EmissividadeNB*K1)./L_toaB6)+1))-273.15;
-figure;imshow(T_s,[])
-colormap(jet)
-colorbar
+TempSuperf = (K2./log(((EmissividadeNB*K1)./L_toaB6)+1))-273.15;
+TempSuperf = TempSuperf .* mask_b6;
+TempSuperf(find(TempSuperf ==0))= NaN;
+figure;
+h = imagesc(TempSuperf);
+axis off;
+set(h, 'AlphaData', ~isnan(TempSuperf)); 
+set(gca,'color','white');
+c=colorbar
+c.FontSize=14; 
+colormap
+
+%Perfil selicionado no mapa
+% x1 = 6052; y1 = 1763;
+% x2 = 5889; y2 = 1763;
+   
+x1 = 6500; y1 = 1872;
+x2 = 2000; y2 = 1872;
+
+a_temp = TempSuperf(y1:y2 , x2:x1 );
+a_temp = rot90(a_temp', -1);
+%d_a_temp = diag(a_temp);
+%d_a_temp = d_a_temp/max(d_a_temp);
+b_temp = insertShape(NDVI, 'Line', [x1 y1 x2 y2 ], 'Color', 'red', 'LineWidth',10);
+figure; imshow(b_temp, []); title('Região Amostrada');
+
+
+%a_ndvi = NDVI(1530:2905, 3590:6164);
+a_ndvi =NDVI(y1:y2 , x2:x1);
+a_ndvi = rot90(a_ndvi', -1);
+%d_a_ndvi = diag(a_ndvi)*max(d_a_temp)*2.5;
+a_ndvi = a_ndvi;
+ figure; title('Perfil 1995');
+ yyaxis left
+ plot(a_temp, 'DisplayName', 'Temperatura C°');
+ ylabel('Temperatura em C°')
+
+hold on
+yyaxis right
+plot(a_ndvi, 'DisplayName', 'NDVI')
+ylabel('NDVI')
+xlabel('Pixels amostrados')
+lgd = legend('Location','bestoutside')
+lgd.Title.String = 'Legenda'
+
+%Correlação entre o ndvi e a Temperatura de superficie
+[rho, pval] = corr(a_temp', a_ndvi', 'Type', 'Spearman');
+[rho, pval] = corr(a_temp', a_ndvi', 'Type', 'Pearson');
