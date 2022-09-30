@@ -12,6 +12,11 @@ B4 = double(imread('RECORTE_B4.tif'));
 B3 = double(imread('RECORTE_B3.TIF'));
 B6 = double(imread('RECORTE_B6.TIF'));
 
+meuretangle = [5174,2282,6262-5174,3174-2282];
+B4 = double(imcrop(imread('.TIF'),meuretangle));
+B3 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B3.TIF'),meuretangle));
+B6 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B6.TIF'),meuretangle));
+
 %==========================================
  %B4(find(B4>100)) = 0;
  mask_b4 = B4;

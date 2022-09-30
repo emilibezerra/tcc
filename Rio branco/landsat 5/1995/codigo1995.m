@@ -8,15 +8,20 @@ fclose(fid);
 val = jsondecode(str);
 
 %% 1995
-%meuretangle = [2352,915,6502-2352,6203-915];
-%BIV = double(imread('LT05_L2SP_214066_19890928_20200916_02_T1_SR_B4.TIF'));
-%B4 = double(imcrop(imread('RECORTE_B4.TIF'),meuretangle));
-%B3 = double(imcrop(imread('recorte_B3.TIF'),meuretangle));
-%B6 = double(imcrop(imread('RECORTE_B6.TIF'),meuretangle));
+%meuretangle = [2036,1586,6194-2036,6678-1586];
+meuretangle = [5174,2282,6262-5174,3174-2282];
+B4 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B4.TIF'),meuretangle));
+B3 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B3.TIF'),meuretangle));
+B6 = double(imcrop(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B6.TIF'),meuretangle));
+% 
+% B4 = double(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B4.tif'));
+% B3 = double(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B3.TIF'));
+% B6 = double(imread('LT05_L1TP_002067_19950511_20200913_02_T1_B6.TIF'));
 
-B4 = double(imread('RECORTE_B4.tif'));
-B3 = double(imread('recorte_B3.TIF'));
-B6 = double(imread('RECORTE_B6.TIF'));
+
+% B4 = double(imread('RECORTE_B4.tif'));
+% B3 = double(imread('recorte_B3.TIF'));
+% B6 = double(imread('RECORTE_B6.TIF'));
 
 %========Removendo Nuvens=========
 

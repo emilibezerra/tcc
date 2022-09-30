@@ -8,9 +8,23 @@ fclose(fid);
 val = jsondecode(str);
 
 %% 2000
-B4 = double(imread('RECORTE_B4.tif'));
-B3 = double(imread('RECORTE_B3.TIF'));
-B6 = double(imread('RECORTE_B6.TIF'));
+% B4 = double(imread('RECORTE_B4.tif'));
+% B3 = double(imread('RECORTE_B3.TIF'));
+% B6 = double(imread('RECORTE_B6.TIF'));
+
+% B4 = double(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B4.tif'));
+% B3 = double(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B3.TIF'));
+% B6 = double(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B6.TIF'));
+
+meuretangle = [5573,2229,6708-5573,3379-2229];
+B4 = double(imcrop(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B4.TIF'),meuretangle));
+B3 = double(imcrop(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B3.TIF'),meuretangle));
+B6 = double(imcrop(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B6.TIF'),meuretangle));
+
+% B4 = double(imresize(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B4.tif'),[6981 7801]));
+% B3 = double(imresize(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B3.TIF'),[6981 7801]));
+% B6 = double(imresize(imread('LT05_L1TP_002067_20000524_20200907_02_T1_B6.TIF'),[6981 7801]));
+
 
 %==========================================
  %B4(find(B4>100)) = 0;
@@ -90,7 +104,7 @@ K2 = str2double(val.LANDSAT_METADATA_FILE.LEVEL1_THERMAL_CONSTANTS.K2_CONSTANT_B
 TempSuperf = (K2./log(((EmissividadeNB*K1)./L_toaB6)+1))-273.15;
 TempSuperf = (K2./log(((EmissividadeNB*K1)./L_toaB6)+1))-273.15;
 TempSuperf = TempSuperf .* mask_b6;
-TempSuperf(find(TempSuperf ==0))= NaN;
+TempSuperf(TempSuperf ==0)= NaN;
 figure;
 h = imagesc(TempSuperf);
 axis off;
