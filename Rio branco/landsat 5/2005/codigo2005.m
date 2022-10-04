@@ -12,7 +12,11 @@ val = jsondecode(str);
 % B3 = double(imread('RECORTE_B3.TIF'));
 % B6 = double(imread('RECORTE_B6.TIF'));
 
-meuretangle = [5174,2282,6262-5174,3174-2282];
+% B4 = double(imread('LT05_L1TP_002067_20050607_20200902_02_T1_B4.tif'));
+% B3 = double(imread('LT05_L1TP_002067_20050607_20200902_02_T1_B3.TIF'));
+% B6 = double(imread('LT05_L1TP_002067_20050607_20200902_02_T1_B6.TIF'));
+
+meuretangle = [5324,1882,6711-5324,3292-1882];
 B4 = double(imcrop(imread('LT05_L1TP_002067_20050607_20200902_02_T1_B4.TIF'),meuretangle));
 B3 = double(imcrop(imread('LT05_L1TP_002067_20050607_20200902_02_T1_B3.TIF'),meuretangle));
 B6 = double(imcrop(imread('LT05_L1TP_002067_20050607_20200902_02_T1_B6.TIF'),meuretangle));
@@ -114,34 +118,42 @@ colormap
 %Perfil selicionado no mapa
 % x1 = 6052; y1 = 1763;
 % x2 = 5889; y2 = 1763;
+%%
+x1 = 1; y1 = 1411;
+x2 = 1388; y2 = 1;
 
-x1 = 6500; y1 = 1872;
-x2 = 2000; y2 = 1872;
-
-a_temp = TempSuperf(y1:y2 , x2:x1 );
-a_temp = rot90(a_temp', -1);
-%d_a_temp = diag(a_temp);
-%d_a_temp = d_a_temp/max(d_a_temp);
-b_temp = insertShape(NDVI, 'Line', [x1 y1 x2 y2 ], 'Color', 'red', 'LineWidth',10);
+% a_temp = TempSuperf(y1:y2 , x2:x1 );
+a_temp = rot90(TempSuperf', -1);
+d_a_temp = diag(a_temp);
+% d_a_temp = d_a_temp/max(d_a_temp);
+b_temp = insertShape(NDVI, 'Line', [x1 y1 x2 y2 ], 'Color', 'red', 'LineWidth',3);
 figure; imshow(b_temp, []); title('Região Amostrada');
-
-
-a_ndvi =NDVI(y1:y2 , x2:x1);
-a_ndvi = rot90(a_ndvi', -1);
+%%
+% teste = NDVI;
+% teste(find(teste<0))=-1;
+% teste(teste>=0 & teste<0.2)=1;
+% teste(teste>=0.2 & teste<0.4)=2;
+% teste(teste>=0.4 & teste<0.6)=3;
+% teste(teste>=0.6 & teste<0.8)=4;
+% NDVI=teste;
+% a_ndvi =NDVI(y1:y2 , x2:x1);
+a_ndvi = rot90(NDVI', -1);
 a_ndvi = a_ndvi;
- figure; title('Perfil 2005');
+d_a_ndvi = diag(a_ndvi);
+
+ figure; title('Perfil 2010');
  yyaxis left
- plot(a_temp, 'DisplayName', 'Temperatura C°');
+ plot(d_a_temp, 'DisplayName', 'Temperatura C°','LineWidth',2);
  ylabel('Temperatura em C°')
 
 hold on
 yyaxis right
-plot(a_ndvi, 'DisplayName', 'NDVI')
+plot(d_a_ndvi, 'DisplayName', 'NDVI','LineWidth',2)
 ylabel('NDVI')
 xlabel('Pixels amostrados')
 lgd = legend('Location','bestoutside')
 lgd.Title.String = 'Legenda'
 
 %Correlação entre o ndvi e a Temperatura de superficie
-[rho, pval] = corr(a_temp', a_ndvi', 'Type', 'Spearman');
-[rho, pval] = corr(a_temp', a_ndvi', 'Type', 'Pearson');
+[rho, pval] = corr(d_a_temp', d_a_ndvi', 'Type', 'Spearman');
+[rho, pval] = corr(d_a_temp', d_a_ndvi', 'Type', 'Pearson');
