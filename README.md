@@ -1,1 +1,1 @@
-"Aqui estão os codigos que precisei executar para meu trabalho de conclusão de curso titulado "Análise Temporal de Ilhas de Calor Através da Temperatura de Superfície e do Índice de Vegetação em RIO BRANCO-AC, Brasil." " 
+Aqui estão os codigos que precisei executar para meu trabalho de conclusão de curso titulado "Análise Temporal de Ilhas de Calor Através da Temperatura de Superfície e do Índice de Vegetação em RIO BRANCO-AC, Brasil.", a apartir deles é possivel realizar o calculo do NDVI e LST em imagens dos satelites Landsat-5 e 8.
