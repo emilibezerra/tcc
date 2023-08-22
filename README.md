@@ -1,2 +1,1 @@
-"# tcc" 
-"# tcc" 
+"Aqui estão os codigos que precisei executar para meu trabalho de conclusão de curso titulado "Análise Temporal de Ilhas de Calor Através da Temperatura de Superfície e do Índice de Vegetação em RIO BRANCO-AC, Brasil." " 
